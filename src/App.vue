@@ -1,6 +1,14 @@
 <template>
     <div id="app">
-        <BaseTimer class="pb" v-bind:reps="reps" v-bind:timeLimit="lim" />
+        <BaseTimer
+            v-bind:reps="reps"
+            v-bind:repsDone="repsDone"
+            v-bind:timeLimit="lim"
+        />
+        <div class="pb" style="font-size: 50px">
+            <p v-if="is_break">Break</p>
+            <p v-else>Work</p>
+        </div>
         <div>
             <div>
                 <div class="vert">
@@ -52,6 +60,7 @@ export default {
             brk: 10,
             reps: 8,
             lim: 10,
+            repsDone: 1,
             is_break: false,
             did_start: false,
         };
@@ -61,6 +70,7 @@ export default {
     },
     mounted() {
         bus.$on("inter_done", this.next);
+        bus.$on("clicked", this.start);
     },
     methods: {
         start() {
@@ -69,25 +79,25 @@ export default {
                 this.did_start = true;
             }
             this.is_break = !this.is_break;
-            console.log(this.lim);
-            console.log(this.is_break);
             bus.$emit("start");
         },
         reset() {
             this.did_start = false;
+            this.repsDone = 1;
             bus.$emit("reset");
         },
         next() {
-            if (this.reps <= 0) {
+            if (this.repsDone > this.reps) {
                 bus.$emit("completed");
                 this.did_start = false;
+                this.repsDone = 1;
                 return;
             }
             if (this.is_break) {
                 this.lim = this.work;
             } else {
                 this.lim = this.brk;
-                this.reps = this.reps - 1;
+                this.repsDone = this.repsDone + 1;
             }
 
             this.is_break = !this.is_break;

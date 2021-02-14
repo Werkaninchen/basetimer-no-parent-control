@@ -1,5 +1,5 @@
 <template>
-    <div class="base-timer">
+    <div class="base-timer" v-on:click="clckd">
         <svg
             class="base-timer__svg"
             viewBox="0 0 100 100"
@@ -25,7 +25,7 @@
             </g>
         </svg>
         <span class="base-timer__label">{{ formattedTimeLeft }}</span>
-        <p class="base-timer__sub_label">{{ reps }}</p>
+        <p class="base-timer__sub_label">{{ repsDone }} / {{ reps }}</p>
     </div>
 </template>
 
@@ -37,6 +37,7 @@ export default {
     props: {
         timeLimit: Number,
         reps: Number,
+        repsDone: Number,
     },
     data() {
         return {
@@ -79,7 +80,7 @@ export default {
 
     watch: {
         timeLeft(newValue) {
-            if (newValue === 0) {
+            if (newValue === 0 || newValue < 0) {
                 this.onTimesUp();
             }
         },
@@ -87,13 +88,12 @@ export default {
     mounted() {
         bus.$on("start", this.startTimer);
         bus.$on("reset", this.resetTimer);
-        bus.$on("completed", this.onDone);
+        bus.$on("completed", this.resetTimer);
     },
 
     methods: {
-        onDone() {
-            clearInterval(this.timerInterval);
-            this.timePassed = this.timeLimit;
+        clckd() {
+            bus.$emit("clicked");
         },
         onTimesUp() {
             clearInterval(this.timerInterval);
@@ -156,7 +156,7 @@ export default {
         position: absolute;
         width: 300px;
         height: 300px;
-        top: 0;
+        top: -10%;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -166,7 +166,7 @@ export default {
         position: absolute;
         width: 300px;
         height: 200px;
-        top: 25%;
+        top: 20%;
         display: flex;
         align-items: center;
         justify-content: center;

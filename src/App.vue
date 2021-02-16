@@ -5,7 +5,7 @@
             v-bind:repsDone="repsDone"
             v-bind:timeLimit="lim"
         />
-        <div class="pb" style="font-size: 50px">
+        <div class="pb status-wraper" style="font-size: 50px">
             <p v-if="is_break">Break</p>
             <p v-else>Work</p>
         </div>
@@ -84,10 +84,14 @@ export default {
         reset() {
             this.did_start = false;
             this.repsDone = 1;
+            this.is_break = false;
             bus.$emit("reset");
         },
         next() {
-            if (this.repsDone > this.reps) {
+            if (
+                this.repsDone > this.reps ||
+                (this.brk && this.repsDone >= this.reps)
+            ) {
                 bus.$emit("completed");
                 this.did_start = false;
                 this.repsDone = 1;
@@ -97,7 +101,7 @@ export default {
                 this.lim = this.work;
             } else {
                 this.lim = this.brk;
-                this.repsDone = this.repsDone + 1;
+                this.repsDone++;
             }
 
             this.is_break = !this.is_break;
@@ -114,8 +118,11 @@ export default {
 body {
     background-color: #00ff00;
 }
+.status-wraper {
+    font-weight: bolder;
+}
 .pb {
-    margin-bottom: 100vh;
+    margin-bottom: 80vh;
 }
 #app {
     font-family: "Avenir", Helvetica, Arial, sans-serif;

@@ -56,13 +56,9 @@ export default {
             const minutes = Math.floor(timeLeft / 60);
             let seconds = timeLeft % 60;
 
-            if (seconds < 10) {
-                seconds = `0${seconds}`;
-            }
+            if (minutes <= 0) return `${seconds}`;
+            if (seconds < 10) seconds = `0${seconds}`;
 
-            if (minutes <= 0) {
-                return `${seconds}`;
-            }
             return `${minutes}:${seconds}`;
         },
 
@@ -80,9 +76,8 @@ export default {
 
     watch: {
         timeLeft(newValue) {
-            if (newValue === 0 || newValue < 0) {
-                this.onTimesUp();
-            }
+            if (newValue == null) return;
+            if (newValue <= 0) this.onTimesUp();
         },
     },
     mounted() {
@@ -161,6 +156,7 @@ export default {
         align-items: center;
         justify-content: center;
         font-size: 120px;
+        font-weight: bolder;
     }
     &__sub_label {
         position: absolute;
@@ -171,6 +167,7 @@ export default {
         align-items: center;
         justify-content: center;
         font-size: 50px;
+        font-weight: bolder;
     }
 }
 </style>

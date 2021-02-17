@@ -90,7 +90,7 @@ export default {
         next() {
             if (
                 this.repsDone > this.reps ||
-                (this.brk && this.repsDone >= this.reps)
+                (!this.brk && this.repsDone >= this.reps)
             ) {
                 bus.$emit("completed");
                 this.did_start = false;
